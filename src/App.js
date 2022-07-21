@@ -1,23 +1,14 @@
-import logo from "./logo.svg";
-import "./App.css";
+import React from "react";
+import HomePage from "./components/homePage";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Welcome to Aermazon.</p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Go to Product Listings
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  render() {
+    return (
+      <div className="App">
+        <HomePage />
+      </div>
+    );
+  }
 }
 
 export default App;
