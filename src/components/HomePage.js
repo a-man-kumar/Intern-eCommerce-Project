@@ -1,6 +1,7 @@
 import React from "react";
-import logo from "./logo.svg";
-import "./App.css";
+import logo from "../logo.svg";
+import "../App.css";
+import { Link } from "react-router-dom";
 
 export default class HomePage extends React.Component {
   render() {
@@ -8,14 +9,7 @@ export default class HomePage extends React.Component {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>Welcome to Aermazon.</p>
-        <a
-          className="App-link"
-          href="./productListings.js"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Go to Product Listings
-        </a>
+        <Link to="/ProductListings">ProductListings</Link>
       </header>
     );
   }
