@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import JSONDATA from "../MOCK_DATA.json";
 import ProductViewings from "./ProductViewing";
+import { Link } from "react-router-dom";
 
 export default function Searchbar() {
   const [SearchTerm, setSearchTerm] = useState("");
@@ -26,9 +27,9 @@ export default function Searchbar() {
         return (
           <div>
             {" "}
-            <button onClick={() => window.open("./ProductViewings")}>
+            <Link to="/ProductViewings" state={{ productid: val.id }}>
               {val.product_name}
-            </button>
+            </Link>
           </div>
         );
       })}

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./App";
 import HomePage from "./components/HomePage";
 import { ProductListings } from "./components/ProductListings";
+import ProductViewings from "./components/ProductViewing";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 
@@ -13,6 +14,7 @@ root.render(
       <Route path="/" element={<App />} />
       <Route path="homepage" element={<HomePage />} />
       <Route path="productlistings" element={<ProductListings />} />
+      <Route path="productviewings" element={<ProductViewings />} />
     </Routes>
   </BrowserRouter>
 );
