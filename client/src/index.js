@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./App";
+import Cart from "./components/Cart";
 import HomePage from "./components/HomePage";
 import { ProductListings } from "./components/ProductListings";
 import ProductViewings from "./components/ProductViewing";
@@ -15,6 +16,7 @@ root.render(
       <Route path="homepage" element={<HomePage />} />
       <Route path="productlistings" element={<ProductListings />} />
       <Route path="productviewings" element={<ProductViewings />} />
+      <Route path="cart" element={<Cart />} />
     </Routes>
   </BrowserRouter>
 );
