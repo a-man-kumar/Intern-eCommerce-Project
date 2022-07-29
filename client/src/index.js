@@ -1,10 +1,11 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./App";
-import Cart from "./components/Cart";
-import HomePage from "./components/HomePage";
-import { ProductListings } from "./components/ProductListings";
-import ProductViewings from "./components/ProductViewing";
+import Cart from "./components/cart";
+import HomePage from "./components/home_page";
+import OrderHistory from "./components/order_history";
+import { ProductListings } from "./components/product_listings";
+import ProductViewings from "./components/product_viewings";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 
@@ -17,6 +18,7 @@ root.render(
       <Route path="productlistings" element={<ProductListings />} />
       <Route path="productviewings" element={<ProductViewings />} />
       <Route path="cart" element={<Cart />} />
+      <Route path="orderhistory" element={<OrderHistory />} />
     </Routes>
   </BrowserRouter>
 );

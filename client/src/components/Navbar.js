@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Searchbar from "./Searchbar";
+import Searchbar from "./searchbar";
 import { Link } from "react-router-dom";
+import "antd/dist/antd.css";
+import { Card, Select } from "antd";
 
-export const Navbar = () => {
+export const Navbar = (props) => {
   const [category, setCategory] = useState({ category: "Select Category" });
   const [productData, setProductData] = useState([{}]);
   const [productCategory, setProductCategory] = useState([{}]);
@@ -15,6 +17,15 @@ export const Navbar = () => {
       });
   }, []);
 
+  console.log(props.state);
+  if (props.state === true) {
+    fetch("/products")
+      .then((response) => response.json())
+      .then((data) => {
+        setProductData(data);
+      });
+  }
+
   useEffect(() => {
     fetch("/products/category")
       .then((response) => response.json())
@@ -26,42 +37,48 @@ export const Navbar = () => {
   return (
     <>
       <nav className="main-nav">
-        {/* logo part */}
-        <div className="logo">Aermazon</div>
-
         {/* menu part */}
         <div className="menu-link">
-          <ul>
-            {/* categories */}
-            <li>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              >
-                <option>Select Category</option>
-                {/* productCategory.map((val,key) => {
+          {/* categories */}
+          <div>
+            <select
+              style={{
+                margin: 16,
+                padding: "16px 20px",
+                border: "none",
+                borderRadius: "4px",
+                backgroundColor: "#f1f1f1",
+              }}
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option>Select Category</option>
+              {/* productCategory.map((val,key) => {
 
                 }) */}
-                <option>books</option>
-                <option>electronics</option>
-                <option>sporting goods</option>
-                <option>clothing</option>
-                <option>housing essentials</option>
-              </select>
-            </li>
+              <option>all products</option>
+              <option>books</option>
+              <option>electronics</option>
+              <option>sporting goods</option>
+              <option>clothing</option>
+              <option>housing essentials</option>
+            </select>
+          </div>
 
-            {/* search bar */}
-            <li>
-              <Searchbar />
-            </li>
-            <li>filters</li>
-          </ul>
+          {/* search bar */}
+          <div
+            style={{
+              display: "inline-block",
+            }}
+          >
+            <Searchbar />
+          </div>
         </div>
       </nav>
       <div>
         {productData
           .filter((val) => {
-            if (category === "Select Category") return val;
+            if (category === "all products") return val;
             else {
               const categoriesArr = productCategory.filter((x) => {
                 if (category === x.categoryName) return x;
@@ -75,15 +92,23 @@ export const Navbar = () => {
           })
           .map((val, key) => {
             return (
-              <div>
-                <Link to="/ProductViewings" state={{ productid: val.id }}>
-                  {val.name}
-                </Link>
-
-                <h2>{val.description}</h2>
-                <h2>{val.price}</h2>
-                <h2>{val.categoryId}</h2>
-              </div>
+              <>
+                <Card
+                  title={val.name}
+                  extra={
+                    <Link to="/ProductViewings" state={{ name: val.name }}>
+                      View
+                    </Link>
+                  }
+                  style={{
+                    width: 300,
+                    display: "inline-block",
+                  }}
+                >
+                  <p>Description: {val.description}</p>
+                  <p>Price: {val.price}</p>
+                </Card>
+              </>
             );
           })}
       </div>
