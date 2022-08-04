@@ -23,7 +23,6 @@ export default function Cart(props) {
 
   let totalPrice = 0;
 
-  console.log(cartItems);
   cartItems.forEach((item) => {
     console.log(item.price);
     totalPrice += item.price;

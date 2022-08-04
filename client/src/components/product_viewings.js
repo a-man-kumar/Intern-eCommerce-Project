@@ -7,7 +7,7 @@ import { Card, Divider, Row, Col } from "antd";
 
 export default function ProductViewings(props) {
   const location = useLocation();
-  const [prodid, setProdid] = useState({ name: "" });
+  const [prodid, setProdid] = useState({});
 
   const [productData, setProductData] = useState([{}]);
 
@@ -17,18 +17,21 @@ export default function ProductViewings(props) {
   };
 
   //fetch products from api
-  useEffect(() => {
-    fetch("/products")
-      .then((response) => response.json())
-      .then((data) => {
-        setProductData(data);
-      });
-  }, []);
 
   React.useEffect(() => {
     if (location.state) setProdid(location.state);
   }, [location]);
 
+  console.log(prodid.name);
+
+  useEffect(() => {
+    fetch(`/products?name=${prodid.name}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setProductData(data);
+      });
+  }, [prodid.name]);
+  console.log(productData);
   return (
     <>
       <>
@@ -52,44 +55,39 @@ export default function ProductViewings(props) {
         </Row>
       </>
       <hr></hr>
-      {productData
-        .filter((val) => {
-          if (prodid.name === val.name) return val;
-          else return "";
-        })
-        .map((val, key) => {
-          return (
-            <>
-              <Card
-                title={val.name}
-                style={{
-                  width: 300,
+      {productData.map((val, key) => {
+        return (
+          <>
+            <Card
+              title={val.name}
+              style={{
+                width: 300,
+              }}
+            >
+              <p>Description: {val.description}</p>
+              <p>Price: {val.price}</p>
+            </Card>
+            <div>
+              <Button
+                onClick={() => {
+                  Axios.post("/cart", {
+                    productId: val.id,
+                    product_name: val.name,
+                    price: val.price,
+                    total: val.price,
+                  }).then((res) => {
+                    console.log(res.val);
+                    // <p1>Added to cart</p1>;
+                    message.success("Added to cart");
+                  });
                 }}
               >
-                <p>Description: {val.description}</p>
-                <p>Price: {val.price}</p>
-              </Card>
-              <div>
-                <Button
-                  onClick={() => {
-                    Axios.post("/cart", {
-                      productId: val.id,
-                      product_name: val.name,
-                      price: val.price,
-                      total: val.price,
-                    }).then((res) => {
-                      console.log(res.val);
-                      // <p1>Added to cart</p1>;
-                      message.error("Added to cart");
-                    });
-                  }}
-                >
-                  Add to cart
-                </Button>
-              </div>
-            </>
-          );
-        })}
+                Add to cart
+              </Button>
+            </div>
+          </>
+        );
+      })}
     </>
   );
 }

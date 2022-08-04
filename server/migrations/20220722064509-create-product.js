@@ -1,20 +1,20 @@
-'use strict';
+"use strict";
 module.exports = {
   async up(queryInterface, DataTypes) {
-    await queryInterface.createTable('products', {
+    await queryInterface.createTable("products", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
       },
       name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       description: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       // category_id: {
       //   type:DataTypes.INTEGER,
@@ -22,19 +22,25 @@ module.exports = {
       // },
       price: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        validate: {
+          min: {
+            args: [[1]],
+            msg: "must be a value greater than or equal to 1",
+          },
+        },
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: DataTypes.DATE
-      }
+        type: DataTypes.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('products');
-  }
+    await queryInterface.dropTable("products");
+  },
 };

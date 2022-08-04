@@ -8,6 +8,7 @@ import { Col, Divider, Row } from "antd";
 export const ProductListings = () => {
   const [isreloaded, setIsreloaded] = useState(false);
   const Reload = () => setIsreloaded(true);
+
   const style = {
     background: "#DDDDDD",
     padding: "8px 0",

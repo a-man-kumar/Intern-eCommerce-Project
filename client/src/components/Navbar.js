@@ -5,24 +5,26 @@ import "antd/dist/antd.css";
 import { Card, Select } from "antd";
 
 export const Navbar = (props) => {
-  const [category, setCategory] = useState({ category: "Select Category" });
+  const [category, setCategory] = useState("");
   const [productData, setProductData] = useState([{}]);
+  const [validate, setValidate] = useState(true);
   const [productCategory, setProductCategory] = useState([{}]);
 
   useEffect(() => {
-    fetch("/products")
+    fetch(`/products?categoryId=${category}`)
       .then((response) => response.json())
       .then((data) => {
         setProductData(data);
       });
-  }, []);
+  }, [category]);
 
   console.log(props.state);
-  if (props.state === true) {
-    fetch("/products")
+  if (props.state === true && validate) {
+    fetch(`/products?categoryId=${category}`)
       .then((response) => response.json())
       .then((data) => {
         setProductData(data);
+        setValidate(false);
       });
   }
 
@@ -42,6 +44,7 @@ export const Navbar = (props) => {
           {/* categories */}
           <div>
             <select
+              placeholder="Select a category"
               style={{
                 margin: 16,
                 padding: "16px 20px",
@@ -52,16 +55,10 @@ export const Navbar = (props) => {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
-              <option>Select Category</option>
-              {/* productCategory.map((val,key) => {
-
-                }) */}
-              <option>all products</option>
-              <option>books</option>
-              <option>electronics</option>
-              <option>sporting goods</option>
-              <option>clothing</option>
-              <option>housing essentials</option>
+              <option value={""}>Select a category</option>
+              {productCategory.map((cat, key) => {
+                return <option value={cat.id}>{cat.categoryName}</option>;
+              })}
             </select>
           </div>
 
@@ -76,41 +73,31 @@ export const Navbar = (props) => {
         </div>
       </nav>
       <div>
-        {productData
-          .filter((val) => {
-            if (category === "all products") return val;
-            else {
-              const categoriesArr = productCategory.filter((x) => {
-                if (category === x.categoryName) return x;
-                return "";
-              });
-
-              let result = categoriesArr.map((a) => a.id);
-              if (val.categoryId === result[0]) return val;
-            }
-            return "";
-          })
-          .map((val, key) => {
-            return (
-              <>
-                <Card
-                  title={val.name}
-                  extra={
-                    <Link to="/ProductViewings" state={{ name: val.name }}>
-                      View
-                    </Link>
-                  }
-                  style={{
-                    width: 300,
-                    display: "inline-block",
-                  }}
-                >
-                  <p>Description: {val.description}</p>
-                  <p>Price: {val.price}</p>
-                </Card>
-              </>
-            );
-          })}
+        {productData.map((val, key) => {
+          return (
+            <div
+              style={{
+                display: "inline-flex",
+              }}
+            >
+              <Card
+                title={val.name}
+                extra={
+                  <Link to="/ProductViewings" state={{ name: val.name }}>
+                    View
+                  </Link>
+                }
+                style={{
+                  width: 300,
+                  // display: "inline-block",
+                }}
+              >
+                <p>Description: {val.description}</p>
+                <p>Price: {val.price}</p>
+              </Card>
+            </div>
+          );
+        })}
       </div>
     </>
   );

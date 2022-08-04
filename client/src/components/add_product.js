@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Axios from "axios";
 import "antd/dist/antd.css";
+import { Button, Checkbox, Form, Input } from "antd";
 
 export default function AddProduct(props) {
   const style = {
@@ -43,6 +44,7 @@ export default function AddProduct(props) {
   return (
     <div>
       <h2>Add a product:</h2>
+
       <form onSubmit={(e) => submit(e)}>
         <input
           style={style}

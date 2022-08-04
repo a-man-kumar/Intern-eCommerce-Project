@@ -1,9 +1,7 @@
 const express = require("express");
 const { sequelize, product, carts, history, category } = require("./models");
-
 const app = express();
 app.use(express.json());
-
 //add category
 app.post("/products/category", async (req, res) => {
   const { categoryName } = req.body;
@@ -25,7 +23,6 @@ app.get("/products/category", async (req, res) => {
     return res.status(500).json({ error: "Something went wrong" });
   }
 });
-
 //add product
 app.post("/products", async (req, res) => {
   const { name, description, categoryId, price } = req.body;
@@ -55,17 +52,16 @@ app.post("/products", async (req, res) => {
 //         return res.status(500).json({error:"Something went wrong"})
 //     }
 // })
-
 //get all products
-app.get("/products", async (req, res) => {
-  try {
-    const producta = await product.findAll();
-    return res.json(producta);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: "Something went wrong" });
-  }
-});
+// app.get('/products',async(req,res)=>{
+//     try{
+//         const producta=await product.findAll()
+//         return res.json(producta)
+//     }catch(err){
+//         console.log(err)
+//         return res.status(500).json({error:"Something went wrong"})
+//     }
+// })
 //get one product specific product by id
 app.get("/products/:id", async (req, res) => {
   const id = req.params.id;
@@ -79,11 +75,44 @@ app.get("/products/:id", async (req, res) => {
     return res.status(500).json({ error: "Something went wrong" });
   }
 });
+//search
+// app.get('/search',async(req,res)=>{
+//     const { Op } = require("sequelize");
+//     const {name}= req.body
+//     try{
+//         const filter={
+//             where:{
+//                 name:{
+//                 [Op.substring]: name
+//                 },
+//             }
+//         }
+//         const producta=await product.findAll(filter)
+//         return res.json(producta)
+//     }catch(err){
+//         console.log(err)
+//         return res.status(500).json({error:"Something went wrong"})
+//     }
+// })
+//raw sql query test, returns one product id from each category
+app.get("/suggestion", async (req, res) => {
+  try {
+    const { QueryTypes } = require("sequelize");
+    const results = await product.sequelize.query(
+      'SELECT "categoryId",min("id") FROM "products" GROUP BY "categoryId" order by "categoryId"',
+      { type: sequelize.QueryTypes.SELECT }
+    );
+    return res.json(results);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+});
 //get one product from each category
-// app.get('/products/suggestions',async(req,res)=>{
+// app.get('/suggestions',async(req,res)=>{
 //     try{
 //         const producta=await product.findAll({
-//             where:{categoryId:distinct}
+//             Attributes: ['name'], group: ['categoryId']
 //         })
 //         return res.json(producta)
 //     }catch(err){
@@ -92,54 +121,46 @@ app.get("/products/:id", async (req, res) => {
 //     }
 // })
 //get products by category
-app.get("/products/category/:cat", async (req, res) => {
-  const cat = req.params.cat;
-  try {
-    const producta = await product.findAll({
-      where: { categoryId: cat },
-    });
-    return res.json(producta);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: "Something went wrong" });
-  }
-});
-//get products by price filter
-app.get("/products/priceFilter/:priceUpper", async (req, res) => {
-  const { Op } = require("sequelize");
-  const priceUpper = req.params.priceUpper;
-  try {
-    const producta = await product.findAll({
-      where: {
-        price: {
-          [Op.lte]: priceUpper,
-        },
-      },
-    });
-    return res.json(producta);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: "Something went wrong" });
-  }
-});
-//get products by multiple filters, not functioning yet
-// app.get('/test',async(req,res)=>{
+// app.get('/products/category/:cat',async(req,res)=>{
+//     const cat= req.params.cat
+//     try{
+//         const producta=await product.findAll({
+//             where:{categoryId: cat}
+//         })
+//         return res.json(producta)
+//     }catch(err){
+//         console.log(err)
+//         return res.status(500).json({error:"Something went wrong"})
+//     }
+// })
+//get products by price filter less than upper value
+// app.get('/products/priceFilter/:priceUpper',async(req,res)=>{
 //     const { Op } = require("sequelize");
-//     const priceUpper= req.params["lower"]
-//     const priceLower= req.params["upper"]
+//     const priceUpper= req.params.priceUpper
+//     try{
+//         const producta=await product.findAll({
+//             where:{price: {
+//                 [Op.lte]: priceUpper
+//               }}
+//         })
+//         return res.json(producta)
+//     }catch(err){
+//         console.log(err)
+//         return res.status(500).json({error:"Something went wrong"})
+//     }
+// })
+//get products filtered by lower and upper values
+// app.get('/filterPrice',async(req,res)=>{
+//     const { Op } = require("sequelize");
+//     const {priceUpper,priceLower}= req.body
 //     try{
 //         const filter={
 //             where:{
 //                 price:{
-//                 [Op.and]: [{
-//                     minimum: {
-//                         [Op.lte]: priceUpper,
-//                     },
-//                 }, {
-//                     maximum: {
-//                         [Op.gte]: priceLower,
-//                     },
-//                 }],
+//                 [Op.and]: {
+//                         [Op.lt]: priceUpper,
+//                         [Op.gt]: priceLower
+//                 },
 //             },
 //         }
 //         }
@@ -150,6 +171,74 @@ app.get("/products/priceFilter/:priceUpper", async (req, res) => {
 //         return res.status(500).json({error:"Something went wrong"})
 //     }
 // })
+//get products filtered by lower and upper values and category, all products writing another way
+// app.get('/cat_price_filter',async(req,res)=>{
+//     const { Op } = require("sequelize");
+//     const {categoryId,priceUpper,priceLower}= req.body
+//     try{
+//         const filter={
+//             where:{
+//                 [Op.and]:{
+//                     //if(categoryId==1||categoryId==2||categoryId==3||categoryId==4||categoryId==5)
+//                     categoryId:categoryId,
+//                     price:{
+//                         [Op.and]: {
+//                            [Op.lt]: priceUpper,
+//                            [Op.gt]: priceLower
+//                          },
+//                     },
+//             },
+//         }
+//         }
+//         if(categoryId==undefined && priceUpper==undefined && priceLower==undefined)
+//         {   const producta=await product.findAll()
+//             return res.json(producta)
+//         }
+//         else {
+//             const producta=await product.findAll(filter)
+//             return res.json(producta)
+//         }
+
+//     }catch(err){
+//         console.log(err)
+//         return res.status(500).json({error:"Something went wrong"})//json.error(err.message)
+//     }
+// })
+//product listing page
+app.get("/products", async (req, res) => {
+  const { Op } = require("sequelize");
+  const { name, categoryId, priceUpper, priceLower } = req.query;
+  //console.log(categoryId,priceUpper,priceLower)
+  try {
+    // if(priceUpper!=undefined){
+    // }
+    // if(priceLower!=undefined){
+    // }
+    let options = { where: {} };
+    if (categoryId) {
+      options.where.categoryId = categoryId;
+    }
+    if (priceUpper && priceLower) {
+      options.where.price = {
+        //$between : {priceLower,priceUpper}
+        [Op.and]: {
+          [Op.lte]: priceUpper,
+          [Op.gte]: priceLower,
+        },
+      };
+    }
+    if (name) {
+      options.where.name = {
+        [Op.substring]: name,
+      };
+    }
+    const producta = await product.findAll(options);
+    return res.json(producta);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Something went wrong" }); //json.error(err.message)
+  }
+});
 //add product to cart
 app.post("/cart", async (req, res) => {
   const { productId, product_name, price, total } = req.body;
@@ -161,8 +250,7 @@ app.post("/cart", async (req, res) => {
     return res.status(500).json(err);
   }
 });
-
-//remove all items from cart, working but not giving any response
+//remove all items from cart
 app.delete("/empty_cart", async (req, res) => {
   try {
     const deleted = await carts.update(
@@ -179,7 +267,7 @@ app.delete("/empty_cart", async (req, res) => {
     return res.status(500).json({ error: "Something went wrong" });
   }
 });
-//remove one item from cart by id of cart item, working but not giving any response
+//remove one item from cart by id of cart item
 app.delete("/edit_cart/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -209,7 +297,6 @@ app.get("/cart", async (req, res) => {
     return res.status(500).json({ error: "Something went wrong" });
   }
 });
-
 //add product to history
 app.post("/history", async (req, res) => {
   const { productId, product_name, price, quantity, total } = req.body;
@@ -227,7 +314,6 @@ app.post("/history", async (req, res) => {
     return res.status(500).json(err);
   }
 });
-
 //get all products from history
 app.get("/history", async (req, res) => {
   try {
@@ -238,15 +324,14 @@ app.get("/history", async (req, res) => {
     return res.status(500).json({ error: "Something went wrong" });
   }
 });
-
 //connection
+// app.listen({ port: 5000 }, async () => {
+//   console.log("Server up on http://localhost:5000");
+//   await sequelize.authenticate({ force: true });
+//   console.log("Database connected!");
+// });
 app.listen({ port: 5000 }, async () => {
   console.log("Server up on http://localhost:5000");
-  await sequelize.authenticate({ force: true });
+  await sequelize.sync({ force: true });
   console.log("Database connected!");
 });
-// app.listen({port:5000}, async ()=>{
-//     console.log('Server up on http://localhost:5000')
-//     await sequelize.sync({force:true})
-//     console.log('Database connected!')
-// })

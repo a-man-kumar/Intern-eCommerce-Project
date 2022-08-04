@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       active: {
         type: DataTypes.BOOLEAN,
-        defaultValue: 1,
+        defaultValue: true,
       },
       total: {
         type: DataTypes.BIGINT,

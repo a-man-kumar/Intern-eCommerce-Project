@@ -8,12 +8,13 @@ export default function Searchbar() {
   const [productData, setProductData] = useState([{}]);
 
   useEffect(() => {
-    fetch("/products")
+    fetch(`/products?name=${SearchTerm}`)
       .then((response) => response.json())
       .then((data) => {
         setProductData(data);
       });
-  }, []);
+  }, [SearchTerm]);
+  console.log(SearchTerm);
 
   return (
     <div>
